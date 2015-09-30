@@ -7,7 +7,7 @@ require 'scraperwiki'
 require 'nokogiri'
 
 # Read in a page
-url = "https://docs.google.com/spreadsheets/d/1QkkIRF-3Qrz-aRIxERbGbB7YHWz2-t4ix-7TEcuBNfE/pubhtml?gid=1823583981&single=true"
+url = "https://docs.google.com/spreadsheets/d/1AWDMIZsE9k3jQaJlgCKBt8vwVHg4Tg4MqHd-09CRc6I/pubhtml?gid=494757158&single=true"
 page = Nokogiri::HTML(open(url), nil, 'utf-8')
 rows = page.xpath('//table[@class="waffle"]/tbody/tr')
 
@@ -18,19 +18,26 @@ rows.collect do |r|
 end
 
 content.shift
+# p content
 content.each do |row|
-  record = {
-    "uid" => row[0],
-    "category" => row[1],
-    "promess" => row[2],
-    "description" => row[3],
-    "quality" => row[4],
-    "fulfillment" => row[5],
-    "ponderator" => row[6],
-    "last_update" => Date.today.to_s
-  }
-  ScraperWiki.save_sqlite(["uid"], record)
-  puts "Adds new record " + record['uid']
+  if row[2] != ""
+    record = {
+      "fecha" => row[0],
+      "medio" => row[1],
+      "titular" => row[2],
+      "imagen" => row[3],
+      "bajada" => row[4],
+      "tipo_prensa" => row[5],
+      "link" => row[6],
+      "temas" => row[7],
+      "observaciones" => row[8],
+      "prensa_internacional" => row[9],
+      "destacada" => row[10],
+      "created_at" => Date.today.to_s
+    }
+    ScraperWiki.save_sqlite(["link"], record)
+    puts "Adds new record " + record['link']
+  end
 end
 
 # p page.at('div.content')
