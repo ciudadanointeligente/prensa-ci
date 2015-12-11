@@ -6,38 +6,53 @@
 require 'scraperwiki'
 require 'nokogiri'
 
-# Read in a page
-url = "https://docs.google.com/spreadsheets/d/1AWDMIZsE9k3jQaJlgCKBt8vwVHg4Tg4MqHd-09CRc6I/pubhtml?gid=494757158&single=true"
-page = Nokogiri::HTML(open(url), nil, 'utf-8')
-rows = page.xpath('//table[@class="waffle"]/tbody/tr')
+def get_news(gid)
+  # Read in a page
+  url = "https://docs.google.com/spreadsheets/d/1AWDMIZsE9k3jQaJlgCKBt8vwVHg4Tg4MqHd-09CRc6I/pubhtml?gid="+gid+"&single=true"
+  page = Nokogiri::HTML(open(url), nil, 'utf-8')
+  rows = page.xpath('//table[@class="waffle"]/tbody/tr')
 
-# Find somehing on the page using css selectors
-content = []
-rows.collect do |r|
-  content << r.xpath('td').map { |td| td.text.strip }
+  # Find somehing on the page using css selectors
+  content = []
+  rows.collect do |r|
+    content << r.xpath('td').map { |td| td.text.strip }
+  end
+
+  content.shift
+  # p content
+  content.each do |row|
+    if row[2] != ""
+      record = {
+        "id" => Digest::SHA1.hexdigest(row[6].gsub(/\s+/, "")),
+        "fecha" => row[0],
+        "medio" => row[1],
+        "titular" => row[2],
+        "imagen" => row[3],
+        "bajada" => row[4],
+        "tipo_prensa" => row[5],
+        "link" => row[6],
+        "temas" => row[7],
+        "observaciones" => row[8],
+        "prensa_internacional" => row[9],
+        "destacada" => row[10],
+        "created_at" => Date.today.to_s
+      }
+
+      # Storage records
+      if ((ScraperWiki.select("* from data where `id`='#{record['id']}'").empty?) rescue true)
+        ScraperWiki.save_sqlite(["id"], record)
+        puts "Adds new record from " + record['id']
+      else
+        ScraperWiki.save_sqlite(["id"], record)
+        puts "Updating already saved record from " + record['id']
+      end
+    end
+  end
 end
 
-content.shift
-# p content
-content.each do |row|
-  if row[2] != ""
-    record = {
-      "fecha" => row[0],
-      "medio" => row[1],
-      "titular" => row[2],
-      "imagen" => row[3],
-      "bajada" => row[4],
-      "tipo_prensa" => row[5],
-      "link" => row[6],
-      "temas" => row[7],
-      "observaciones" => row[8],
-      "prensa_internacional" => row[9],
-      "destacada" => row[10],
-      "created_at" => Date.today.to_s
-    }
-    ScraperWiki.save_sqlite(["link"], record)
-    puts "Adds new record " + record['link']
-  end
+a_gid = ['494757158','1616582078','1546052280','1989196281']
+a_gid.each do | gid |
+  get_news(gid);
 end
 
 # p page.at('div.content')
