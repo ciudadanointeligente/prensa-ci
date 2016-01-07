@@ -1,12 +1,3 @@
-# observatorio-spreadsheet-storage
-This is a data storage for [Observatorio anti corrupción](https://github.com/ciudadanointeligente/observatorio) that runs on [Morph](https://morph.io). To get started [see the documentation](https://morph.io/documentation)
+# Prensa CI
 
-## Deploy & Installation
-
-WIP
-
-
-### Everything else:
-
-For more information about us, our site [Fundación Ciudadano Inteligente](http://www.ciudadanointeligente.org/).
-And if you want help with patches, report bugs or replicate our project check [our repositories](https://github.com/ciudadanointeligente/).
+recopilación de apariciones en prensa de la [Fundación Ciudadano Inteligente](//prensa.ciudadanointeligente.org)
