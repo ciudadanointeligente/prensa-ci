@@ -6,6 +6,16 @@
 require 'scraperwiki'
 require 'nokogiri'
 
+def valid_date row
+  if row.empty?
+    d,m,a = row.split '/'
+    if Date.valid_date? a.to_i, m.to_i, d.to_i
+      return true
+    end
+  end
+  return false
+end
+
 def get_news(gid)
   # Read in a page
   url = "https://docs.google.com/spreadsheets/d/1AWDMIZsE9k3jQaJlgCKBt8vwVHg4Tg4MqHd-09CRc6I/pubhtml?gid="+gid+"&single=true"
@@ -21,10 +31,13 @@ def get_news(gid)
   content.shift
   # p content
   content.each do |row|
-    if row[2] != ""
+    if row[2] != "" && valid_date(row[0])
+      date_news_y = DateTime.parse(row[0]).strftime("%Y").to_i
+      date_news_m = DateTime.parse(row[0]).strftime("%-m").to_i
+      date_news_d = DateTime.parse(row[0]).strftime("%-d").to_i
       record = {
         "id" => Digest::SHA1.hexdigest(row[6].gsub(/\s+/, "")),
-        "fecha" => row[0],
+        "fecha" => Date.new(date_news_y,date_news_m,date_news_d).to_time.to_i,
         "medio" => row[1],
         "titular" => row[2],
         "imagen" => row[3],
@@ -54,17 +67,3 @@ a_gid = ['494757158','1616582078','1546052280','1989196281','374723069','1280486
 a_gid.each do | gid |
   get_news(gid);
 end
-
-# p page.at('div.content')
-#
-# # Write out to the sqlite database using scraperwiki library
-# ScraperWiki.save_sqlite(["name"], {"name" => "susan", "occupation" => "software developer"})
-#
-# # An arbitrary query against the database
-# ScraperWiki.select("* from data where 'name'='peter'")
-
-# You don't have to do things with the Mechanize or ScraperWiki libraries.
-# You can use whatever gems you want: https://morph.io/documentation/ruby
-# All that matters is that your final data is written to an SQLite database
-# called "data.sqlite" in the current working directory which has at least a table
-# called "data".
