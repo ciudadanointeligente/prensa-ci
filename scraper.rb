@@ -7,7 +7,7 @@ require 'scraperwiki'
 require 'nokogiri'
 
 def valid_date row
-  if row.empty?
+  if !row.empty?
     d,m,a = row.split '/'
     if Date.valid_date? a.to_i, m.to_i, d.to_i
       return true
