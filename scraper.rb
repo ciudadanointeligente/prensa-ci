@@ -37,7 +37,7 @@ def get_news(gid)
       date_news_d = DateTime.parse(row[0]).strftime("%-d").to_i
       record = {
         "id" => Digest::SHA1.hexdigest(row[6].gsub(/\s+/, "")),
-        "fecha" => Date.new(date_news_y,date_news_m,date_news_d).to_time.to_i,
+        "fecha" => DateTime.parse(Date.new(date_news_y,date_news_m,date_news_d).to_time.to_s).strftime('%Q'),
         "medio" => row[1],
         "titular" => row[2],
         "imagen" => row[3],
@@ -54,6 +54,7 @@ def get_news(gid)
       # Storage records
       if ((ScraperWiki.select("* from data where `id`='#{record['id']}'").empty?) rescue true)
         ScraperWiki.save_sqlite(["id"], record)
+        p record['fecha']
         puts "Adds new record from " + record['id']
       else
         ScraperWiki.save_sqlite(["id"], record)
