@@ -35,6 +35,10 @@ def get_news(gid)
       date_news_y = DateTime.parse(row[0]).strftime("%Y").to_i
       date_news_m = DateTime.parse(row[0]).strftime("%-m").to_i
       date_news_d = DateTime.parse(row[0]).strftime("%-d").to_i
+
+      puts "titular: "+ row[2]
+      puts "y: "+date_news_y.to_s+" m: "+date_news_m.to_s+" d: "+date_news_d.to_s
+
       record = {
         "id" => Digest::SHA1.hexdigest(row[6].gsub(/\s+/, "")),
         "fecha" => DateTime.parse(Date.new(date_news_y,date_news_m,date_news_d).to_time.to_s).strftime('%Q'),
